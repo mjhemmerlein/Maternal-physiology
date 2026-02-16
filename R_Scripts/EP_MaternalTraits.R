@@ -37,7 +37,7 @@ dPman_EP <- dPman_0_EP[keep_EP,]
 dim(dPman_EP)
 
 
-# Filter to BW -------------
+# Filter to BW -------
 EP_Sample_Info = EP_Sample_Info %>% filter(Strain == "BW")
 BW = EP_Sample_Info$Seq_Name
 
@@ -47,10 +47,9 @@ Pman_rawreads_EP <- Pman_rawreads_EP %>% filter(!is.na(Geneid))
 row.names(Pman_rawreads_EP) <- Pman_rawreads_EP$Geneid
 Pman_rawreads_EP <- Pman_rawreads_EP[,-c(1:6)]
 Pman_rawreads_EP <- Pman_rawreads_EP[,names(Pman_rawreads_EP) %in% BW]
-
 Pman_readcounts_EP <- as.matrix(Pman_rawreads_EP)
-dPman_0 <- DGEList(Pman_readcounts_EP)
 
+dPman_0 <- DGEList(Pman_readcounts_EP)
 dPman_0 <- calcNormFactors(dPman_0)
 dim(dPman_0)
 
@@ -62,6 +61,9 @@ plotMDS(dPman_BW, col = as.numeric(EP_Sample_Info$Strain), labels = EP_Sample_In
 Check_EP <- EP_Sample_Info$Seq_Name
 colnames(Pman_rawreads_EP) == Check_EP
 colnames(Pman_rawreads_EP) <- rownames(EP_Sample_Info)
+
+# IMPORTANT: Also update column names in dPman_BW to match
+colnames(dPman_BW) <- rownames(EP_Sample_Info)
 
 # Define your traits
 traits <- c("resid_F.Mass_Gain",
@@ -95,10 +97,13 @@ for (trait in traits) {
   # Remove samples with NA for this trait
   na_mask <- !is.na(EP_Sample_Info[[trait]])
   EP_Sample_Info_sub <- EP_Sample_Info[na_mask, ]
-  dPman_sub <- dPman_BW[, na_mask] #change as needed!
+  dPman_sub <- dPman_BW[, na_mask]
   
-  # Define formula
-  form <- ~ trait*O2 + (1|Mom)
+  # Ensure column names match row names
+  colnames(dPman_sub) <- rownames(EP_Sample_Info_sub)
+  
+  # Define formula using reformulate
+  form <- reformulate(c(paste0(trait, "*O2"), "(1|Mom)"))
   
   # Run voom with dream weights
   vobjDream <- voomWithDreamWeights(
@@ -113,6 +118,7 @@ for (trait in traits) {
   fitmm <- dream(vobjDream, form, EP_Sample_Info_sub, ddf = "Kenward-Roger")
   fitmm <- eBayes(fitmm)
   
+  # Extract results
   # For main trait effect
   DE_trait <- topTable(fitmm, coef = trait, sort.by = "P", n = Inf)
   
@@ -180,20 +186,16 @@ dim(dPman_EP)
 # Filter to ME -------
 EP_Sample_Info = EP_Sample_Info %>% filter(Strain == "ME")
 ME = EP_Sample_Info$Seq_Name
-
 Pman_rawreads_EP <- read_xlsx("Raw_Data/EP_Pman_ExtMMFrac_readcounts_Exon.xlsx")
 Pman_rawreads_EP <- as.data.frame(Pman_rawreads_EP)
 Pman_rawreads_EP <- Pman_rawreads_EP %>% filter(!is.na(Geneid))
 row.names(Pman_rawreads_EP) <- Pman_rawreads_EP$Geneid
 Pman_rawreads_EP <- Pman_rawreads_EP[,-c(1:6)]
 Pman_rawreads_EP <- Pman_rawreads_EP[,names(Pman_rawreads_EP) %in% ME]
-
 Pman_readcounts_EP <- as.matrix(Pman_rawreads_EP)
 dPman_0 <- DGEList(Pman_readcounts_EP)
-
 dPman_0 <- calcNormFactors(dPman_0)
 dim(dPman_0)
-
 dPman_ME <- dPman_0[keep_EP,]
 dim(dPman_ME)
 plotMDS(dPman_ME, col = as.numeric(EP_Sample_Info$Strain), labels = EP_Sample_Info$Strain)
@@ -202,6 +204,9 @@ plotMDS(dPman_ME, col = as.numeric(EP_Sample_Info$Strain), labels = EP_Sample_In
 Check_EP <- EP_Sample_Info$Seq_Name
 colnames(Pman_rawreads_EP) == Check_EP
 colnames(Pman_rawreads_EP) <- rownames(EP_Sample_Info)
+
+# IMPORTANT: Also update column names in dPman_ME to match
+colnames(dPman_ME) <- rownames(EP_Sample_Info)
 
 # Define your traits
 traits <- c("resid_F.Mass_Gain",
@@ -235,10 +240,13 @@ for (trait in traits) {
   # Remove samples with NA for this trait
   na_mask <- !is.na(EP_Sample_Info[[trait]])
   EP_Sample_Info_sub <- EP_Sample_Info[na_mask, ]
-  dPman_sub <- dPman_ME[, na_mask] #change as needed!
+  dPman_sub <- dPman_ME[, na_mask]
   
-  # Define formula
-  form <- ~ trait*O2 + (1|Mom)
+  # Ensure column names match row names
+  colnames(dPman_sub) <- rownames(EP_Sample_Info_sub)
+  
+  # Define formula using reformulate
+  form <- reformulate(c(paste0(trait, "*O2"), "(1|Mom)"))
   
   # Run voom with dream weights
   vobjDream <- voomWithDreamWeights(
@@ -286,4 +294,3 @@ for (trait in traits) {
 
 # Save summary table
 write.csv(sig_counts, file = "ME_SIG_summary.csv", row.names = FALSE)
-
