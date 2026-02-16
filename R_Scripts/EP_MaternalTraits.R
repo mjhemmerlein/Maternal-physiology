@@ -81,8 +81,6 @@ traits <- c("resid_F.Mass_Gain",
 results_list <- list()
 sig_counts <- data.frame(
   trait = character(),
-  strain = integer(),
-  o2 = integer(),
   interaction = integer(),
   n_samples = integer(),
   stringsAsFactors = FALSE
@@ -100,7 +98,7 @@ for (trait in traits) {
   dPman_sub <- dPman_BW[, na_mask] #change as needed!
   
   # Define formula
-  form <- ~ O2 + (1|Mom)
+  form <- ~ trait*O2 + (1|Mom)
   
   # Run voom with dream weights
   vobjDream <- voomWithDreamWeights(
@@ -115,20 +113,20 @@ for (trait in traits) {
   fitmm <- dream(vobjDream, form, EP_Sample_Info_sub, ddf = "Kenward-Roger")
   fitmm <- eBayes(fitmm)
   
-  # Extract results
-  DE_strain <- topTable(fitmm, coef = 'StrainME', sort.by = "P", n = Inf)
-  DE_o2 <- topTable(fitmm, coef = 'O22H', sort.by = "P", n = Inf)
-  DE_ixn <- topTable(fitmm, coef = 'StrainME:O22H', sort.by = "P", n = Inf)
+  # For main trait effect
+  DE_trait <- topTable(fitmm, coef = trait, sort.by = "P", n = Inf)
+  
+  # For interaction
+  interaction_coef <- paste0(trait, ":O22H")
+  DE_ixn <- topTable(fitmm, coef = interaction_coef, sort.by = "P", n = Inf)
   
   # Count significant genes
-  n_sig_strain <- sum(DE_strain$adj.P.Val < 0.05)
-  n_sig_o2 <- sum(DE_o2$adj.P.Val < 0.05)
+  n_sig_trait <- sum(DE_trait$adj.P.Val < 0.05)
   n_sig_ixn <- sum(DE_ixn$adj.P.Val < 0.05)
   
   # Store results
   results_list[[trait]] <- list(
-    DE_strain = DE_strain,
-    DE_o2 = DE_o2,
+    DE_trait = DE_trait,
     DE_ixn = DE_ixn,
     n_samples = sum(na_mask)
   )
@@ -136,15 +134,12 @@ for (trait in traits) {
   # Store counts
   sig_counts <- rbind(sig_counts, data.frame(
     trait = trait,
-    strain = n_sig_strain,
-    o2 = n_sig_o2,
     interaction = n_sig_ixn,
     n_samples = sum(na_mask)
   ))
   
   # Save individual trait results
-  write.csv(DE_strain, file = paste0("BW_DE_strain_", trait, ".csv"), row.names = TRUE)
-  write.csv(DE_o2, file = paste0("BW_DE_o2_", trait, ".csv"), row.names = TRUE)
+  write.csv(DE_trait, file = paste0("BW_DE_trait_", trait, ".csv"), row.names = TRUE)
   write.csv(DE_ixn, file = paste0("BW_DE_ixn_", trait, ".csv"), row.names = TRUE)
 }
 
@@ -226,8 +221,6 @@ traits <- c("resid_F.Mass_Gain",
 results_list <- list()
 sig_counts <- data.frame(
   trait = character(),
-  strain = integer(),
-  o2 = integer(),
   interaction = integer(),
   n_samples = integer(),
   stringsAsFactors = FALSE
@@ -245,7 +238,7 @@ for (trait in traits) {
   dPman_sub <- dPman_ME[, na_mask] #change as needed!
   
   # Define formula
-  form <- ~ O2 + (1|Mom)
+  form <- ~ trait*O2 + (1|Mom)
   
   # Run voom with dream weights
   vobjDream <- voomWithDreamWeights(
@@ -261,19 +254,20 @@ for (trait in traits) {
   fitmm <- eBayes(fitmm)
   
   # Extract results
-  DE_strain <- topTable(fitmm, coef = 'StrainME', sort.by = "P", n = Inf)
-  DE_o2 <- topTable(fitmm, coef = 'O22H', sort.by = "P", n = Inf)
-  DE_ixn <- topTable(fitmm, coef = 'StrainME:O22H', sort.by = "P", n = Inf)
+  # For main trait effect
+  DE_trait <- topTable(fitmm, coef = trait, sort.by = "P", n = Inf)
+  
+  # For interaction
+  interaction_coef <- paste0(trait, ":O22H")
+  DE_ixn <- topTable(fitmm, coef = interaction_coef, sort.by = "P", n = Inf)
   
   # Count significant genes
-  n_sig_strain <- sum(DE_strain$adj.P.Val < 0.05)
-  n_sig_o2 <- sum(DE_o2$adj.P.Val < 0.05)
+  n_sig_trait <- sum(DE_trait$adj.P.Val < 0.05)
   n_sig_ixn <- sum(DE_ixn$adj.P.Val < 0.05)
   
   # Store results
   results_list[[trait]] <- list(
-    DE_strain = DE_strain,
-    DE_o2 = DE_o2,
+    DE_trait = DE_trait,
     DE_ixn = DE_ixn,
     n_samples = sum(na_mask)
   )
@@ -281,15 +275,12 @@ for (trait in traits) {
   # Store counts
   sig_counts <- rbind(sig_counts, data.frame(
     trait = trait,
-    strain = n_sig_strain,
-    o2 = n_sig_o2,
     interaction = n_sig_ixn,
     n_samples = sum(na_mask)
   ))
   
   # Save individual trait results
-  write.csv(DE_strain, file = paste0("ME_DE_strain_", trait, ".csv"), row.names = TRUE)
-  write.csv(DE_o2, file = paste0("ME_DE_o2_", trait, ".csv"), row.names = TRUE)
+  write.csv(DE_trait, file = paste0("ME_DE_trait_", trait, ".csv"), row.names = TRUE)
   write.csv(DE_ixn, file = paste0("ME_DE_ixn_", trait, ".csv"), row.names = TRUE)
 }
 
