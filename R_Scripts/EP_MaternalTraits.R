@@ -140,7 +140,8 @@ for (trait in traits) {
   # Store counts
   sig_counts <- rbind(sig_counts, data.frame(
     trait = trait,
-    interaction = n_sig_ixn,
+    trait_DE = n_sig_trait,
+    interaction_DE = n_sig_ixn,
     n_samples = sum(na_mask)
   ))
   
@@ -283,7 +284,8 @@ for (trait in traits) {
   # Store counts
   sig_counts <- rbind(sig_counts, data.frame(
     trait = trait,
-    interaction = n_sig_ixn,
+    trait_DE = n_sig_trait,
+    interaction_DE = n_sig_ixn,
     n_samples = sum(na_mask)
   ))
   
@@ -294,3 +296,4 @@ for (trait in traits) {
 
 # Save summary table
 write.csv(sig_counts, file = "ME_SIG_summary.csv", row.names = FALSE)
+
