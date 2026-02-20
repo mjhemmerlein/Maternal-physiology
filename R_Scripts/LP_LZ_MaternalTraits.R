@@ -71,21 +71,9 @@ colnames(Pman_rawreads_LP_LZ) <- rownames(LP_LZ_Sample_Info)
 colnames(dPman_BW) <- rownames(LP_LZ_Sample_Info)
 
 # Define your traits
-# traits <- c("resid_F.Mass_Gain",
-#             "resid_F.Mass_GD1",
-#             "resid_F.Mass_GD18.5",
-#             "resid_FoodCon",
-#             "resid_Lung",
-#             "resid_Lung_drymass",
-#             "resid_LV_Sep",
-#             "resid_RV",
-#             "scaled_Gluc",
-#             "scaled_Hb",
-#             "scaled_HctAv",
-#             "scaled_Start_AvgLean")
-
-
-traits <- c("resid_F.Mass_GD18.5",
+traits <- c("resid_F.Mass_Gain",
+            "resid_F.Mass_GD1",
+            "resid_F.Mass_GD18.5",
             "resid_FoodCon",
             "resid_Lung",
             "resid_Lung_drymass",
@@ -95,6 +83,7 @@ traits <- c("resid_F.Mass_GD18.5",
             "scaled_Hb",
             "scaled_HctAv",
             "scaled_Start_AvgLean")
+
 
 # Initialize storage
 results_list <- list()
