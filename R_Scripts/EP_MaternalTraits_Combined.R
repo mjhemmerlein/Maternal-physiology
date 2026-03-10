@@ -40,11 +40,11 @@ dim(dPman_EP)
 plotMDS(dPman_EP, col = as.numeric(EP_Sample_Info$Strain), labels = EP_Sample_Info$Strain)
 
 # Check and match columns
-Check_EP <- EP_Sample_Info$Seq_Name
+Check_EP <- EP_Sample_Info$Sample_ID
 colnames(Pman_rawreads_EP) == Check_EP
 colnames(Pman_rawreads_EP) <- rownames(EP_Sample_Info)
 
-# IMPORTANT: Also update column names in dPman_BW to match
+# IMPORTANT: Also update column names in dPman_EP to match
 colnames(dPman_EP) <- rownames(EP_Sample_Info)
 
 # Define your traits
@@ -124,8 +124,8 @@ for (trait in traits) {
   ))
   
   # Save individual trait results
-  write.csv(DE_trait, file = paste0("EP_Combined_DE_trait_", trait, ".csv"), row.names = TRUE)
-  write.csv(DE_o2, file = paste0("EP_Combined_DE_O2_", trait, ".csv"), row.names = TRUE)
+ # write.csv(DE_trait, file = paste0("EP_Combined_DE_trait_", trait, ".csv"), row.names = TRUE)
+ # write.csv(DE_o2, file = paste0("EP_Combined_DE_O2_", trait, ".csv"), row.names = TRUE)
 }
 
 # Save summary table
