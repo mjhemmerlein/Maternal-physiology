@@ -120,6 +120,7 @@ for (trait in traits) {
   # Store counts
   sig_counts <- rbind(sig_counts, data.frame(
     trait = trait,
+    traitDE = n_sig_trait,
     treatment = n_sig_o2
   ))
   
