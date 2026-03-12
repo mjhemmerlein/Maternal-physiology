@@ -26,11 +26,6 @@ Pman_rawreads_LP_LZ <- Pman_rawreads_LP_LZ %>% filter(!is.na(Geneid))
 Pman_rawreads_LP_LZ <- Pman_rawreads_LP_LZ[,-c(1:6)]
 Pman_rawreads_LP_LZ <- subset(Pman_rawreads_LP_LZ, select = -c(RNA201216ZC_LZ089_S16_L001_fastp_pman_Halign_liberal.bam))
 
-# Check and match columns
-Check_LP <- LP_LZ_Sample_Info$LZ_Seq_Name
-colnames(Pman_rawreads_LP_LZ) == Check_LP
-colnames(Pman_rawreads_LP_LZ) <- rownames(LP_LZ_Sample_Info)
-
 # Filter data
 Pman_readcounts_LP_LZ <- as.matrix(Pman_rawreads_LP_LZ)
 dPman_0_LP_LZ <- DGEList(Pman_readcounts_LP_LZ)
@@ -42,9 +37,9 @@ dim(dPman_LP_LZ)
 plotMDS(dPman_LP_LZ, col = as.numeric(LP_LZ_Sample_Info$Strain), labels = LP_LZ_Sample_Info$Strain)
 
 # Check and match columns
-Check_LP <- LP_LZ_Sample_Info$Sample_ID_LZ
+Check_LP <- LP_LZ_Sample_Info$LZ_Seq_Name
 colnames(Pman_rawreads_LP_LZ) == Check_LP
-colnames(Pman_rawreads_LP_LZ) <- rownames(Sample_ID_LZ)
+colnames(Pman_rawreads_LP_LZ) <- rownames(LP_LZ_Sample_Info)
 
 # IMPORTANT: Also update column names in dPman to match
 colnames(dPman_LP_LZ) <- rownames(LP_LZ_Sample_Info)

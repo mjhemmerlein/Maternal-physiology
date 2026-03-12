@@ -23,11 +23,6 @@ Pman_rawreads_LP_JZ = `row.names<-`(Pman_rawreads_LP_JZ, Pman_rawreads_LP_JZ$Gen
 Pman_rawreads_LP_JZ <- Pman_rawreads_LP_JZ %>% filter(!is.na(Geneid))
 Pman_rawreads_LP_JZ <- Pman_rawreads_LP_JZ[,-c(1:6)]
 
-# Check and match columns
-Check_LP <- LP_JZ_Sample_Info$JZ_Seq_Name
-colnames(Pman_rawreads_LP_JZ) == Check_LP
-colnames(Pman_rawreads_LP_JZ) <- rownames(LP_JZ_Sample_Info)
-
 # Filter data
 Pman_readcounts_LP_JZ <- as.matrix(Pman_rawreads_LP_JZ)
 dPman_0_LP_JZ <- DGEList(Pman_readcounts_LP_JZ)
@@ -39,9 +34,9 @@ dim(dPman_LP_JZ)
 plotMDS(dPman_LP_JZ, col = as.numeric(LP_JZ_Sample_Info$Strain), labels = LP_JZ_Sample_Info$Strain)
 
 # Check and match columns
-Check_LP <- LP_JZ_Sample_Info$Sample_ID_JZ
+Check_LP <- LP_JZ_Sample_Info$JZ_Seq_Name
 colnames(Pman_rawreads_LP_JZ) == Check_LP
-colnames(Pman_rawreads_LP_JZ) <- rownames(Sample_ID_JZ)
+colnames(Pman_rawreads_LP_JZ) <- rownames(LP_JZ_Sample_Info)
 
 # IMPORTANT: Also update column names in dPman_EP to match
 colnames(dPman_LP_JZ) <- rownames(LP_JZ_Sample_Info)
